@@ -14,25 +14,20 @@
     let score = 0;
     let wicket = 0;
     let ballWiseResult = [];
+    let hit = 0;
     const addNum = (num) =>{
-      if(wicket < 10){
-        score += num
-        ballWiseResult.push(num);
-        rootElement.render(<App />)
-      }
+      hit = num;
+      rootElement.render(<App />)
     }
     const addWicket = (num) => {
-      if(wicket < 10){
-        wicket += 1
-        ballWiseResult.push("W");
-        rootElement.render(<App />)
-      }
+      hit = "W"
+      rootElement.render(<App />)
     }
 
     const ScoreButtons = () => {
       return (
         <div>
-          <button>0</button>
+          <button onClick={()=> addNum(0)}>0</button>
           <button onClick={() => addNum(1)}>1</button>
           <button onClick={() => addNum(2)}>2</button>
           <button onClick={() => addNum(3)}>3</button>
@@ -43,12 +38,46 @@
         </div>
       )
     }
+
+    
+      const submitHandler = (event) => {
+event.preventDefault();
+ballWiseResult.unshift(hit)
+if(hit !== "W"){
+  score += Number(hit)
+}else{
+  wicket += 1
+}
+        rootElement.render(<App />)
+      }
+
+
+      const Form = () => (
+        <form onSubmit={submitHandler}>
+          <input value={hit} readOnly/>
+          <input />
+          <button type="submit">Submit</button>
+          </form>
+        )
+
+        
+
     const App = () => {
       return (
         <>
           <h1>SCORE KEEPER</h1>
           <h2>SCORE: {score}/{wicket}</h2>
           <ScoreButtons />
+          <br />
+          <Form />
+          <hr/>
+
+          {
+            ballWiseResult.map((res, idx) => (
+              <p key={idx}>{res}</p>
+            ))
+
+          }
           
         </>
       )}
