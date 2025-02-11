@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -8,6 +9,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Score Keeper</title>
 </head>
+
 <body>
   <div id="root" style="text-align: center;"></div>
   <script type="text/babel">
@@ -15,75 +17,80 @@
     let wicket = 0;
     let ballWiseResult = [];
     let hit = 0;
-    const addNum = (num) =>{
+    const inputRef = React.createRef();
+
+    const addNum = (num) => {
       hit = num;
-      rootElement.render(<App />)
-    }
-    const addWicket = (num) => {
-      hit = "W"
-      rootElement.render(<App />)
-    }
+      rootElement.render(<App />);
+    };
 
-    const ScoreButtons = () => {
-      return (
-        <div>
-          <button onClick={()=> addNum(0)}>0</button>
-          <button onClick={() => addNum(1)}>1</button>
-          <button onClick={() => addNum(2)}>2</button>
-          <button onClick={() => addNum(3)}>3</button>
-          <button onClick={() => addNum(4)}>4</button>
-          <button onClick={() => addNum(5)}>5</button>
-          <button onClick={() => addNum(6)}>6</button>
-          <button onClick={() => addWicket(1)}>Wicket</button>
-        </div>
-      )
-    }
+    const addWicket = () => {
+      hit = "W";
+      rootElement.render(<App />);
+    };
 
-    
-      const submitHandler = (event) => {
-event.preventDefault();
-ballWiseResult.unshift(hit)
-if(hit !== "W"){
-  score += Number(hit)
-}else{
-  wicket += 1
-}
-        rootElement.render(<App />)
+    const ScoreButtons = () => (
+      <div>
+        <button onClick={() => addNum(0)}>0</button>
+        <button onClick={() => addNum(1)}>1</button>
+        <button onClick={() => addNum(2)}>2</button>
+        <button onClick={() => addNum(3)}>3</button>
+        <button onClick={() => addNum(4)}>4</button>
+        <button onClick={() => addNum(5)}>5</button>
+        <button onClick={() => addNum(6)}>6</button>
+        <button onClick={addWicket}>Wicket</button>
+      </div>
+    );
+
+    const submitHandler = (event, inputRef) => {
+      event.preventDefault();
+      const inputValue = inputRef.current ? inputRef.current.value : "";
+
+      ballWiseResult.unshift(
+        <span key={ballWiseResult.length}>{`${hit} - ${inputValue}`}</span>
+      );
+      
+
+      if (hit !== "W") {
+        score += Number(hit);
+      } else {
+        wicket += 1;
       }
+      hit = 0;
+      inputRef.current.value = ""
 
+      rootElement.render(<App />);
+    };
 
-      const Form = () => (
-        <form onSubmit={submitHandler}>
-          <input value={hit} readOnly/>
-          <input />
-          <button type="submit">Submit</button>
-          </form>
-        )
+    const Form = () => {
+      
 
-        
-
-    const App = () => {
       return (
-        <>
-          <h1>SCORE KEEPER</h1>
-          <h2>SCORE: {score}/{wicket}</h2>
-          <ScoreButtons />
-          <br />
-          <Form />
-          <hr/>
+        <form onSubmit={(e) => submitHandler(e, inputRef)}>
+          <input value={hit} readOnly />
+          <input ref={inputRef} placeholder="Add a comment here" />
+          <button type="submit">Submit</button>
+        </form>
+      );
+    };
 
-          {
-            ballWiseResult.map((res, idx) => (
-              <p key={idx}>{res}</p>
-            ))
+    const App = () => (
+      <>
+        <h1>SCORE KEEPER</h1>
+        <h2>SCORE: {score}/{wicket}</h2>
+        <ScoreButtons />
+        <br />
+        <Form />
+        <hr />
+        {ballWiseResult.map((res, idx) => (
+          <p key={idx}>{res}</p>
+        ))}
+      </>
+    );
 
-          }
-          
-        </>
-      )}
-    const rootElement = ReactDOM.createRoot(document.getElementById("root"))
-    rootElement.render(<App />)
+    const rootElement = ReactDOM.createRoot(document.getElementById("root"));
+    rootElement.render(<App />);
   </script>
-  
 </body>
+
 </html>
